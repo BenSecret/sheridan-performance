@@ -120,6 +120,23 @@
     .landing-action .landing-primary:hover{background:#343838}
     .landing-action-note{margin-top:14px;color:#606865;font-size:11px}
     @media(max-width:720px){.coaching-header{padding:41px 0 29px}.coaching-header h1{font-size:clamp(38px,9vw,52px)}.landing-video-section{padding:35px 0 28px}.landing-intro{margin-bottom:23px}.landing-intro h2{font-size:32px}.landing-intro p{font-size:13px}.landing-video-frame{border-radius:7px}.landing-video-footer{font-size:9px;flex-wrap:wrap}.landing-action{margin-top:29px;padding:32px 19px}.landing-action h3{font-size:28px}.landing-action .landing-primary{width:100%;max-width:420px}}
+    /* Coaching landing page: put the full film within the first desktop viewport. */
+    .coaching-first-screen{padding:34px 0 46px}
+    .coaching-first-screen .landing-video-wrap{max-width:1000px}
+    .coaching-first-screen .landing-intro{max-width:780px;margin:0 auto 21px}
+    .coaching-first-screen .landing-intro h1{font:800 clamp(32px,4vw,50px)/1.08 Manrope,Arial,sans-serif;letter-spacing:-.055em;margin:9px 0 10px}
+    .coaching-first-screen .landing-intro p{font-size:13px;line-height:1.6;color:#bfc5c3;margin:0}
+    .coaching-first-screen .landing-video-footer{margin-top:11px}
+    @media(min-width:721px){
+      /* Constrain player width on shorter laptop screens without changing its 16:9 ratio. */
+      .coaching-first-screen .landing-video-wrap{max-width:min(1000px,max(680px,calc(177.78svh - 530px)))}
+    }
+    @media(max-width:720px){
+      .coaching-first-screen{padding:29px 0 34px}
+      .coaching-first-screen .landing-intro{margin-bottom:19px}
+      .coaching-first-screen .landing-intro h1{font-size:clamp(30px,7.5vw,40px);margin:10px 0}
+      .coaching-first-screen .landing-intro p{font-size:12px;line-height:1.55}
+    }
     @media(prefers-reduced-motion:reduce){.offer-track,.offer-card{transition:none}}
   </style>
 </head>
@@ -174,8 +191,7 @@ function plans(){return `<section class="section"><div class="container">${secti
 function coaching(){
  const coachingVideoId=ytId(content.coachingVideo||defaults.coachingVideo);
  const player=coachingVideoId?`<div class="landing-video-frame"><iframe title="Introduction to Sheridan Performance coaching" src="https://www.youtube-nocookie.com/embed/${coachingVideoId}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><div class="landing-video-footer"><span>INTRODUCTION / WATCH THE FILM</span><a href="https://www.youtube.com/watch?v=${coachingVideoId}" target="_blank" rel="noopener noreferrer">Watch directly on YouTube ↗</a></div>`:`<div class="landing-video-frame landing-video-empty"><div><strong>YOUR INTRODUCTION VIDEO</strong><p>Enter a YouTube link in Editor demo → Video slots.</p></div></div>`;
- return `${pageTop('01 / PRIVATE COACHING','COACHING BUILT<br><span class="accent-text">AROUND YOU.</span>','Personalised Ironman and endurance coaching for ambitious people with lives that don’t stand still.','coaching-header')}
- <section class="landing-video-section"><div class="container"><div class="landing-video-wrap"><div class="landing-intro"><div class="eyebrow">THE SHERIDAN APPROACH / INTRODUCTION</div><h2>SEE WHAT'S POSSIBLE.</h2><p>Meet the approach behind the training. Discover what one-to-one coaching could look like when it is built around your ambition, your work and your life.</p></div>${player}<div class="landing-action"><div class="eyebrow">READY FOR YOUR NEXT CHALLENGE?</div><h3>THE NEXT MOVE IS YOURS.</h3><p>Tell us what you’re working towards. We’ll start with a conversation about your goals and how coaching could work for you.</p>${btn('apply','Apply for private coaching ↗','button ink landing-primary')}<div class="landing-action-note">No commitment at this stage — the enquiry form is a demonstration.</div></div></div></div></section>
+ return `<section class="landing-video-section coaching-first-screen"><div class="container"><div class="landing-video-wrap"><div class="landing-intro"><div class="eyebrow">01 / PRIVATE COACHING · THE SHERIDAN APPROACH</div><h1>SEE WHAT'S POSSIBLE.</h1><p>Personalised Ironman and endurance coaching, built around your ambition, your work and your life.</p></div>${player}<div class="landing-action"><div class="eyebrow">READY FOR YOUR NEXT CHALLENGE?</div><h3>THE NEXT MOVE IS YOURS.</h3><p>Tell us what you’re working towards. We’ll start with a conversation about your goals and how coaching could work for you.</p>${btn('apply','Apply for private coaching ↗','button ink landing-primary')}<div class="landing-action-note">No commitment at this stage — the enquiry form is a demonstration.</div></div></div></div></section>
  ${plans()}`
 }
 function corporate(){return `${pageTop('02 / CORPORATE PERFORMANCE','BETTER HUMANS.<br><span class="accent-text">BETTER TEAMS.</span>','Translate the habits of elite endurance sport into performance, resilience and identity at work.')}
