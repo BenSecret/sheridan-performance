@@ -288,6 +288,36 @@
       .next-step-section .discovery-cta{flex-direction:column;align-items:stretch;gap:21px}
       .next-step-section .discovery-button{width:100%;white-space:normal}
     }
+    /* Apply page: standard accessible field sizes; scoped to the public enquiry form. */
+    .form-wrap label{font-size:14px;line-height:1.5;letter-spacing:.01em;color:#e4e9e6}
+    .form-wrap input,
+    .form-wrap select,
+    .form-wrap textarea{font-size:16px;line-height:1.5;min-height:50px;padding:13px 15px;color:#f5f5f2}
+    .form-wrap textarea{min-height:145px}
+    .form-wrap input::placeholder,
+    .form-wrap textarea::placeholder{color:#aeb9b5;opacity:1}
+    .form-wrap select option{font-size:16px}
+    @media(max-width:720px){
+      .form-wrap{padding:24px}
+      .form-wrap input,.form-wrap select,.form-wrap textarea{font-size:16px}
+    }
+
+    /* Second, contextual invitation after the detailed product information. */
+    .product-detail{padding-bottom:55px}
+    .midpage-call{background:#141516;padding:0 0 16px}
+    .midpage-call-inner{display:flex;justify-content:space-between;align-items:center;gap:34px;padding:32px 38px;border:1px solid #4b5250;border-radius:8px;background:#222526}
+    .midpage-call .eyebrow{font-size:11px;letter-spacing:.15em;color:#bbc4bf}
+    .midpage-call h2{font:800 clamp(23px,2.5vw,31px)/1.17 Manrope,Arial,sans-serif;letter-spacing:-.045em;margin:9px 0 9px}
+    .midpage-call p{font-size:16px;line-height:1.5;color:#cbd3ce;margin:0;max-width:600px}
+    .midpage-call .button{flex-shrink:0;background:#f3f4f0;color:#171819;border-radius:40px;padding:15px 26px;min-height:52px;white-space:nowrap;font-size:12px}
+    .midpage-call .button:hover{background:#d9dcda;color:#171819}
+    .next-step-section{padding-top:65px}
+    @media(max-width:720px){
+      .product-detail{padding-bottom:40px}
+      .midpage-call-inner{flex-direction:column;align-items:stretch;gap:23px;padding:25px 22px}
+      .midpage-call .button{width:100%}
+      .next-step-section{padding-top:52px}
+    }
   </style>
 </head>
 <body>
@@ -453,14 +483,18 @@ function corporateDetails(){return productDetails({
  commercial:'Fixed project fee by proposal. Early internal pricing hypotheses range from £8,000–£12,000 for simpler challenges, £15,000–£25,000 for signature multi-day events and £25,000+ for complex delivery. These are unvalidated figures, not published prices.',
  outcome:'A shared physical achievement, strong relationships and a professionally captured story the sponsor can use in agreed ways.'
 });}
- function coaching(){return videoLanding({
+ 
+function bookCallAfterDetails(){
+ return `<section class="midpage-call" aria-label="Speak with Sheridan Performance"><div class="container"><div class="midpage-call-inner"><div><div class="eyebrow">WANT TO TALK IT THROUGH?</div><h2>LET'S DISCUSS YOUR NEXT STEP.</h2><p>Tell us what you have in mind and we'll explore the right approach together.</p></div>${btn('apply','Book a call ↗','button')}</div></div></section>`;
+}
+function coaching(){return videoLanding({
  video:content.coachingVideo||defaults.coachingVideo,title:'Introduction to Sheridan Performance coaching',
  eyebrow:'01 / PRIVATE COACHING · THE SHERIDAN APPROACH',headline:"SEE WHAT'S POSSIBLE.",
  subtitle:'Personalised Ironman and endurance coaching, built around your ambition, your work and your life.',
  actionEyebrow:'READY FOR YOUR NEXT CHALLENGE?',actionHeadline:'THE NEXT MOVE IS YOURS.',
  actionText:'Tell us what you’re working towards. We’ll start with a conversation about your goals and how coaching could work for you.',
  actionLabel:'Apply for private coaching ↗'
- })+coachingDetails()+plans()}
+ })+coachingDetails()+bookCallAfterDetails()+plans()}
  function ironman(){return videoLanding({
   video:content.ironmanVideo||defaults.ironmanVideo,title:'Beyond the Boardroom first-IRONMAN introduction — temporary film',
   eyebrow:'02 / YOUR FIRST IRONMAN · BEYOND THE BOARDROOM',headline:'ENGINEERED FOR THE EXTRAORDINARY.',
@@ -469,7 +503,7 @@ function corporateDetails(){return productDetails({
   actionText:'Tell us about your ambition and your starting point. We’ll discuss what a completely supported first-IRONMAN experience could look like.',
   actionLabel:'Enquire about your first IRONMAN ↗',
   filmNote:'Temporary Beyond the Boardroom video — bespoke programme introduction to follow.'
- })+ironmanDetails()+plans()}
+ })+ironmanDetails()+bookCallAfterDetails()+plans()}
  function teamsStartingPoints(){
  const options=[
   {kind:'SPEAKING & LEARNING',title:'Keynotes & Workshops',description:'Engaging talks and practical sessions translating elite endurance sport into everyday leadership and performance.'},
@@ -485,7 +519,7 @@ function corporate(){return videoLanding({
  actionEyebrow:'READY TO RAISE THE BAR?',actionHeadline:'LET’S BUILD SOMETHING TOGETHER.',
  actionText:'Tell us about your organisation and what you want to achieve. We’ll explore a programme built around your people.',
  actionLabel:'Discuss a team programme ↗'
- })+corporateDetails()+plans()}
+ })+corporateDetails()+bookCallAfterDetails()+plans()}
 function stories(){return `${pageTop('03 / STORIES','BEYOND THE<br><span class="accent-text">BOARDROOM.</span>','The work, the doubt, the breakthrough and the people behind the finish line. Endurance journeys worth documenting.')}
 <section class="section"><div class="container"><div class="story-hero"><div><div class="eyebrow">ORIGINAL DOCUMENTARY SERIES / EPISODE 01</div><h2>BEYOND THE<br>BOARDROOM</h2><button class="play-trigger" data-video="story"><span class="play-circle">▷</span> WATCH FEATURE</button></div></div><div class="two-col" style="margin-top:50px"><div class="bodycopy"><h2>EVERY FINISH LINE<br>HAS A STORY.</h2></div><div class="bodycopy">Their current documentary follows a former FTSE 250 senior managing director taking on another ambitious physical challenge alongside his sons. The series brings the human side of high performance into focus.<p>The prototype includes a video player slot; the live film URL can be added using the editor.</p></div></div></div></section>${cta()}`}
 function apply(){return `${pageTop('04 / START HERE','BIG GOALS START<br><span class="accent-text">WITH A CONVERSATION.</span>','Tell us what you are working towards. The Sheridan team can explore what the right support might look like.')}
