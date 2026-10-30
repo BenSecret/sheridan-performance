@@ -241,6 +241,35 @@
     }
 
     @media(prefers-reduced-motion:reduce){.offer-track,.offer-card{transition:none}}
+
+    /* 2026-10-30: 16px body text with more restrained 1.5 line spacing.
+       Keep display headings, compact labels, and buttons at their established sizes. */
+    body{line-height:1.5}
+    .video-first-screen .landing-intro p,
+    .landing-action p,
+    .product-feature p,
+    .product-benefits li,
+    .product-info-note p,
+    .section-head p,
+    .plan p,
+    .offer-copy .offer-description,
+    .hero p,
+    .feature-text p,
+    .story-home .story-summary p,
+    .bodycopy,
+    .service-card p{font-size:16px;line-height:1.5}
+    .product-detail-heading p,
+    .product-outcome p,
+    .product-pricing-note,
+    .offer-fit span,
+    .principle p,
+    .offer-after,
+    .landing-action-note{line-height:1.5}
+    @media(max-width:720px){
+      .product-feature p,.product-benefits li,.product-info-note p,
+      .video-first-screen .landing-intro p,.landing-action p,
+      .offer-copy .offer-description,.section-head p{font-size:16px;line-height:1.5}
+    }
   </style>
 </head>
 <body>
@@ -306,7 +335,7 @@ function renderFooter(){document.getElementById('footer').innerHTML=`<div class=
 function sectionHeader(k,title,description){return `<div class="section-head"><div><div class="eyebrow">${k}</div><h2>${title}</h2></div><p>${description}</p></div>`}
 function card(n,s,t,d,r){return `<article class="service-card"><div><div class="service-number">0${n} / EXPLORE</div><div class="service-icon">↗</div></div><div><h3>${esc(t)}</h3><p>${esc(d)}</p><button class="text-link" data-go="${r}">Discover the offer <span class="arrow">↗</span></button></div></article>`}
 function cta(){return `<section class="quote"><div class="container"><div class="eyebrow">START A DIFFERENT KIND OF JOURNEY</div><blockquote>Your calendar is demanding.<br><strong>Your ambition can be bigger.</strong></blockquote>${btn('apply','Apply for coaching ↗','button')}</div></section>`}
-function home(){return `<section class="hero"><div class="hero-image" style="background-image:url('${esc(safeImg(content.heroImage))}')"></div><div class="container hero-content"><div class="eyebrow">COACHING · ENDURANCE CHALLENGES · STORYTELLING</div><h1>${esc(content.heroTitle).replace(/\\n|\n/g,'<br>').replace(esc(content.heroAccent),`<em>${esc(content.heroAccent)}</em>`)}</h1><p>${esc(content.heroSubtitle)}</p><div class="hero-actions">${btn('coaching','Explore private coaching →','button')}<button class="button outline" data-video="intro">▷ &nbsp; Meet the Sheridans</button></div><div class="hero-foot"><div class="line"></div>ELITE SPORT. REAL LIFE. NO SHORTCUTS.</div></div></section>
+function home(){return `<section class="hero"><div class="hero-image" style="background-image:url('${esc(safeImg(content.heroImage))}')"></div><div class="container hero-content"><div class="eyebrow">COACHING · ENDURANCE CHALLENGES · STORYTELLING</div><h1>${esc(content.heroTitle).replace(/\\n|\n/g,'<br>').replace(esc(content.heroAccent),`<em>${esc(content.heroAccent)}</em>`)}</h1><p>${esc(content.heroSubtitle)}</p><div class="hero-actions">${btn('coaching','Explore private coaching →','button')}<button class="button outline" data-go="stories">▷ &nbsp; Meet the Sheridans</button></div><div class="hero-foot"><div class="line"></div>ELITE SPORT. REAL LIFE. NO SHORTCUTS.</div></div></section>
 <div class="strip"><div class="container strip-in"><span>Former international athletes</span><span>Executive-first coaching</span><span>Ironman & endurance</span><span>Personalised by design</span></div></div>
  <section class="offer-section" id="three-offers"><div class="container"><div class="offer-intro"><div class="eyebrow">01 / WORK WITH SHERIDAN PERFORMANCE</div><h2>${String(content.offersHeading||'').split(/\\n|\x0A/).map((line,i)=>i?`<span class="accent-text">${esc(line)}</span>`:esc(line)).join('<br>')}</h2><p>${esc(content.offersQuestion)}</p></div>
  <div class="offer-selectors" role="tablist" aria-label="Choose a Sheridan Performance service">${[
@@ -460,7 +489,7 @@ document.addEventListener('touchend',e=>{if(offerTouchX==null||!e.target.closest
 window.addEventListener('resize',()=>{if(route==='home')selectOffer(offerSlide,true)});
 document.addEventListener('keydown',e=>{if(e.target.matches('[data-offer-slide]')&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();selectOffer(offerSlide+(e.key==='ArrowRight'?1:-1));document.querySelector('[data-offer-slide="'+offerSlide+'"]').focus();}});
 function render(){renderNav();renderFooter();document.getElementById('main').innerHTML=({home,coaching,ironman,corporate,apply,admin:adm}[route]||home)();renderModal();if(route==='home')requestAnimationFrame(()=>selectOffer(offerSlide,true));}
-function go(x){const jumpStories=x==='stories';route=jumpStories?'home':x;menu=false;modal=null;render();if(jumpStories)document.getElementById('stories-home')?.scrollIntoView({behavior:'smooth'});else window.scrollTo({top:0,behavior:'smooth'});try{history.replaceState(null,'','#'+(jumpStories?'stories':x))}catch(e){}}
+function go(x){const jumpStories=x==='stories';const alreadyHome=route==='home';route=jumpStories?'home':x;menu=false;modal=null;if(!jumpStories||!alreadyHome)render();if(jumpStories)document.getElementById('stories-home')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});else window.scrollTo({top:0,behavior:'smooth'});try{history.replaceState(null,'','#'+(jumpStories?'stories':x))}catch(e){}}
 function ytId(raw){const s=String(raw||'').trim();if(/^[A-Za-z0-9_-]{11}$/.test(s))return s;try{const u=new URL(s);if(['www.youtube.com','youtube.com','m.youtube.com','music.youtube.com'].includes(u.hostname))return u.searchParams.get('v')?.match(/^[\w-]{11}$/)?.[0]||null;if(u.hostname==='youtu.be')return u.pathname.replace('/','').match(/^[\w-]{11}$/)?.[0]||null;}catch(e){}return null}
 function renderModal(){let m=document.getElementById('modal-root');if(!modal){m.innerHTML='';return}let inside='';if(modal.type==='video'){const id=ytId(content[modal.key]);inside=`<div class="eyebrow">SHERIDAN PERFORMANCE / VIDEO</div><h2>${modal.key==='intro'?'MEET THE SHERIDANS':'BEYOND THE BOARDROOM'}</h2>${id?`<div style="aspect-ratio:16/9"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen title="Sheridan Performance film"></iframe></div>`:`<div class="video-placeholder"><span>YOUR STORY GOES HERE.</span><p>Video placeholder — add a YouTube URL in the demo editor.</p></div><p>For this section: authentic, founder-led talking-to-camera video, intercut with training, work and race-day footage.</p>`}`}
 if(modal.type==='checkout'){const p=content.plans[modal.index]||content.plans[0];inside=`<div class="eyebrow">CHECKOUT PROTOTYPE</div><h2>${esc(p.name)}</h2><p>${esc(p.description)}</p><div class="notice">DEMO MODE · This is not a real purchase. No card data or money will be collected.</div><label>Package status<input readonly value="${esc(p.price)}"></label><button class="button" data-mockbuy="${modal.index}">Simulate checkout →</button><p class="fine">When Stripe is configured, this button can redirect to Stripe Checkout in test mode using the included API example.</p>`}
