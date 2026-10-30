@@ -212,6 +212,34 @@
       .section-head p{font-size:16px}
     }
 
+
+    /* Refinement: unify reading sizes and clarify small editorial labels across all products. */
+    .nav-links{gap:clamp(11px,1.45vw,24px)}
+    .nav-link{font-size:14px;letter-spacing:.005em;line-height:1.45}
+    .admin-link{font-size:12px}
+    .nav-actions>.button{font-size:11px}
+    .video-first-screen .landing-intro .eyebrow,
+    .product-detail-heading .eyebrow{font-size:12px;line-height:1.55;letter-spacing:.16em;text-transform:uppercase}
+    .video-first-screen .landing-video-footer{font-size:12px;line-height:1.6;letter-spacing:.09em;font-weight:600;text-transform:uppercase}
+    .video-first-screen .landing-video-footer a{text-transform:uppercase;text-underline-offset:4px}
+    .product-feature p{font-size:17px;line-height:1.76}
+    .product-benefits li{font-size:17px;line-height:1.75}
+    .product-info-note .tag{font-size:12px;line-height:1.55;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .product-info-note p{font-size:17px;line-height:1.76;color:#d6ddd8}
+    .product-pricing-note{font-size:16px;line-height:1.75;color:#d0d7d3}
+    @media(min-width:721px) and (max-width:1100px){
+      .nav-links{gap:11px}
+      .nav-link{font-size:13px}
+    }
+    @media(max-width:720px){
+      .nav-link{font-size:15px;line-height:1.5}
+      .video-first-screen .landing-intro .eyebrow,
+      .product-detail-heading .eyebrow{font-size:12px}
+      .video-first-screen .landing-video-footer{font-size:11px;line-height:1.6}
+      .product-feature p,.product-benefits li,.product-info-note p{font-size:16px;line-height:1.75}
+      .product-pricing-note{font-size:16px;line-height:1.75}
+    }
+
     @media(prefers-reduced-motion:reduce){.offer-track,.offer-card{transition:none}}
   </style>
 </head>
@@ -300,7 +328,7 @@ ${cta()}
 function plans(){return `<section class="section"><div class="container">${sectionHeader('THE NEXT STEP','FIND YOUR<br><span class="accent-text">STARTING POINT.</span>','All offers are illustrative until the Sheridan team confirms packages and pricing.')}<div class="plans">${content.plans.map((p,i)=>`<div class="plan ${i===1?'featured':''}"><span class="kind">0${i+1} / ${esc(p.kind)}</span><h3>${esc(p.name)}</h3><p>${esc(p.description)}</p><div class="rate">${esc(p.price)}</div><button class="button ${i===1?'':'outline'}" data-checkout="${i}">${i===0?'Book discovery':'View checkout demo'} →</button></div>`).join('')}</div><p class="fine">Checkout is a local simulation; no card details are collected and no charges are made in this prototype.</p></div></section>`}
 function videoLanding({video,title,eyebrow,headline,subtitle,actionEyebrow,actionHeadline,actionText,actionLabel,filmNote}){
  const id=ytId(video);
- const player=id?`<div class="landing-video-frame"><iframe title="${esc(title)}" src="https://www.youtube-nocookie.com/embed/${id}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe></div><div class="landing-video-footer"><span>${filmNote?esc(filmNote):'INTRODUCTION / WATCH THE FILM'}</span><a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer">Watch directly on YouTube ↗</a></div>`:`<div class="landing-video-frame landing-video-empty"><div><strong>YOUR INTRODUCTION VIDEO</strong><p>Enter a YouTube link in Editor demo → Video slots.</p></div></div>`;
+ const player=id?`<div class="landing-video-frame"><iframe title="${esc(title)}" src="https://www.youtube-nocookie.com/embed/${id}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe></div><div class="landing-video-footer"><span>${filmNote?esc(filmNote):'INTRODUCTION / WATCH THE FILM'}</span><a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer">WATCH DIRECTLY ON YOUTUBE ↗</a></div>`:`<div class="landing-video-frame landing-video-empty"><div><strong>YOUR INTRODUCTION VIDEO</strong><p>Enter a YouTube link in Editor demo → Video slots.</p></div></div>`;
  return `<section class="landing-video-section video-first-screen"><div class="container"><div class="landing-video-wrap"><div class="landing-intro"><div class="eyebrow">${esc(eyebrow)}</div><h1>${esc(headline)}</h1><p>${esc(subtitle)}</p></div>${player}<div class="landing-action"><div class="eyebrow">${esc(actionEyebrow)}</div><h3>${esc(actionHeadline)}</h3><p>${esc(actionText)}</p>${btn('apply',esc(actionLabel),'button ink landing-primary')}<div class="landing-action-note">No commitment at this stage — the enquiry form is a demonstration.</div></div></div></div></section>`;
 }
 
