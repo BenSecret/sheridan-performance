@@ -364,6 +364,17 @@
     .lead-details dt{color:#9facaa;font-weight:700}
     .lead-details dd{margin:0;overflow-wrap:anywhere}
     @media(max-width:720px){.application-page{padding:35px 0 63px}.application-header{margin-bottom:26px}.application-header h1{font-size:clamp(31px,9vw,47px)}.application-header>p{font-size:16px}.application-options{grid-template-columns:1fr}.application-field legend{font-size:16px}.application-card-head{align-items:start;flex-direction:column}.application-choice{min-height:56px}.application-success p{font-size:16px}.lead-details dl{grid-template-columns:1fr;gap:3px}.lead-details dd{margin-bottom:8px}}
+    /* Application form: balanced label/field and question-divider rhythm.
+       Fieldset legends sit outside the normal content flow, so padding-top
+       creates space BELOW the title rather than above it. Use margin instead. */
+    .application-card-head{margin-bottom:0}
+    .application-field{margin:25px 0 0;padding:0 0 26px}
+    .application-field legend{margin-bottom:18px}
+    .application-field .application-text{margin-top:0}
+    @media(max-width:720px){
+      .application-field{margin-top:22px;padding-bottom:24px}
+      .application-field legend{margin-bottom:15px}
+    }
   </style>
 </head>
 <body>
