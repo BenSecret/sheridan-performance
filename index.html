@@ -375,6 +375,39 @@
       .application-field{margin-top:22px;padding-bottom:24px}
       .application-field legend{margin-bottom:15px}
     }
+
+    /* Three-stage, low-friction Sheridan application. One page, no reloads. */
+    .application-card-head{align-items:center;gap:18px}
+    .application-step-kicker{display:block;font:700 11px/1.4 Manrope,Arial,sans-serif;letter-spacing:.18em;color:#c3ccc7;margin-bottom:7px;text-transform:uppercase}
+    .application-card-head h2{font-size:clamp(22px,2.5vw,27px)}
+    .application-progress-row{display:flex;align-items:center;gap:14px;margin:22px 0 25px}
+    .application-progress{height:4px;background:#49504d;overflow:hidden;border-radius:8px;flex:1}
+    .application-progress-fill{width:33.333%;height:100%;background:#f4f5f0;transition:width .24s ease}
+    .application-progress-value{white-space:nowrap;font:700 12px/1.4 Manrope,Arial,sans-serif;color:#c5ceca}
+    .application-step[hidden]{display:none!important}
+    .application-step:not([hidden]){animation:application-reveal .21s ease-out}
+    @keyframes application-reveal{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    .application-field:first-child{margin-top:0}
+    .application-choice{min-height:46px;padding:9px 13px;gap:10px;line-height:1.36}
+    .application-options{gap:8px}
+    .application-step .application-field:last-child{border-bottom:0;padding-bottom:5px}
+    .application-optional{font:500 13px/1.4 'DM Sans',Arial,sans-serif;color:#b6c0ba;white-space:nowrap}
+    .application-actions{display:flex;align-items:center;gap:14px;justify-content:space-between}
+    .application-actions [hidden]{display:none!important}
+    .application-actions .application-back{flex:0 0 auto;min-height:48px;padding:10px 18px;border:1px solid #69736e;border-radius:40px;background:transparent;color:#f2f4f0;font-size:13px;font-weight:700;letter-spacing:.04em}
+    .application-actions .application-back:hover{background:#343a37}
+    .application-actions .button{flex:1;max-width:420px;min-height:52px;margin-left:auto}
+    .application-submit{border-top:1px solid #4a514f;margin-top:29px;padding-top:23px}
+    .application-submit .application-warning{background:transparent;border:0;margin:16px 0 0;padding:0;color:#aebbb5;font-size:12px;line-height:1.55}
+    @media(max-width:720px){
+      .application-card-head{flex-direction:row;align-items:center}
+      .application-card-head .tag{font-size:10px}
+      .application-choice{min-height:46px;padding:9px 12px;gap:10px}
+      .application-actions .button{font-size:12px;padding:12px 15px}
+      .application-actions .application-back{padding:11px 15px}
+      .application-progress-row{margin:20px 0 23px}
+    }
+    @media(prefers-reduced-motion:reduce){.application-step:not([hidden]){animation:none}.application-progress-fill{transition:none}}
   </style>
 </head>
 <body>
@@ -435,6 +468,7 @@ if(storedContent.offersQuestion==='How much support do you want?')content.offers
 if(!Array.isArray(content.plans))content.plans=defaults.plans;
 let leads=safeParse(getStored('sheridanDemoLeads'))||[];
 let route='home',menu=false,adminTab='content',modal=null,offerSlide=0;
+let applicationStep=0;
 const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeImg=v=>/^https:\/\//i.test(v)?v:'';
 function save(){try{localStorage.setItem('sheridanDemoContent',JSON.stringify(content));localStorage.setItem('sheridanDemoLeads',JSON.stringify(leads))}catch(e){}}
@@ -584,18 +618,58 @@ function appOptions(name, options, more=false){
  return `<div class="application-options">${options.map((option,i)=>`<label class="application-choice"><input type="radio" name="${name}" value="${esc(option)}" ${i===0?'required':''}><span>${esc(option)}</span></label>`).join('')}</div>${more?`<div class="application-other" data-other-field="${name}" hidden><label for="application-${name}-other">Please tell us a little more<input class="application-text" id="application-${name}-other" name="${name}Other" maxlength="180" placeholder="Your answer" disabled></label></div>`:''}`;
 }
 function appQuestion(no,label,html){return `<fieldset class="application-field"><legend><span class="application-num">${String(no).padStart(2,'0')}.</span>${esc(label)}</legend>${html}</fieldset>`;}
-function apply(){return `<section class="application-page"><div class="container"><div class="application-wrap"><header class="application-header"><div class="eyebrow">SHERIDAN PERFORMANCE | APPLICATION</div><h1>YOU'VE GOT THE AMBITION.<br>LET'S MAKE IT HAPPEN.</h1><p>Tell us a little about yourself, what you want to achieve and where you are right now. This takes less than two minutes.</p></header><div class="application-card"><div class="application-card-head"><h2>Your application</h2><span class="tag">10 QUESTIONS</span></div><form id="application" autocomplete="on">
+function apply(){applicationStep=0;return `<section class="application-page"><div class="container"><div class="application-wrap"><header class="application-header"><div class="eyebrow">SHERIDAN PERFORMANCE | APPLICATION</div><h1>YOU'VE GOT THE AMBITION.<br>LET'S MAKE IT HAPPEN.</h1><p>Tell us a little about yourself, what you want to achieve and where you are right now. This takes less than two minutes.</p></header><div class="application-card"><div class="application-card-head"><div><span id="application-step-count" class="application-step-kicker">STEP 1 OF 3</span><h2 id="application-step-title" tabindex="-1">YOUR AMBITION</h2></div><span class="tag" id="application-question-count">3 QUESTIONS</span></div><div class="application-progress-row"><div class="application-progress" role="progressbar" aria-label="Current application step" aria-valuemin="0" aria-valuemax="3" aria-valuenow="1"><div class="application-progress-fill"></div></div><span class="application-progress-value" id="application-progress-value">1 / 3</span></div><form id="application" autocomplete="on" novalidate>
+<section class="application-step" data-application-step="0" aria-label="Step one: Your ambition">
 ${appQuestion(1,"What's your name?",`<input class="application-text" type="text" name="name" autocomplete="name" placeholder="Your full name" maxlength="140" required>`)}
 ${appQuestion(2,"What's your email address?",`<input class="application-text" type="email" name="email" autocomplete="email" placeholder="you@example.com" maxlength="160" required>`)}
 ${appQuestion(3,'What physical challenge would you love to achieve?',appOptions('challenge',['First IRONMAN','IRONMAN 70.3','Marathon','Ultra endurance','HYROX','Something else'],true))}
+</section>
+<section class="application-step" data-application-step="1" aria-label="Step two: Your starting point" hidden>
 ${appQuestion(4,'When would you ideally like to achieve it?',appOptions('timeframe',['Within 6 months','6–12 months','12–18 months','Just exploring']))}
 ${appQuestion(5,'How would you describe your current fitness and experience?',appOptions('experience',['Beginner / Starting from scratch','Generally active but new to endurance','Regularly training','Experienced endurance athlete']))}
 ${appQuestion(6,'How many hours per week could you realistically commit to training?',appOptions('hours',['3–5 hours','5–7 hours','7–10 hours','10+ hours']))}
+</section>
+<section class="application-step" data-application-step="2" aria-label="Step three: Your commitment" hidden>
 ${appQuestion(7,"What's the biggest thing currently holding you back?",appOptions('obstacle',['Lack of time','Lack of confidence','Not knowing where to start','Lack of structure and accountability','Balancing training with work and family','Something else'],true))}
-${appQuestion(8,'Why is achieving this important to you?',`<textarea class="application-text application-textarea" name="why" maxlength="2500" placeholder="A few sentences about what this means to you…" required></textarea>`)}
+${appQuestion(8,'Why is achieving this important to you? (optional)',`<textarea class="application-text application-textarea" name="why" maxlength="2500" placeholder="A few sentences about what this means to you…"></textarea>`)}
 ${appQuestion(9,'How committed are you to making this happen?',appOptions('commitment',["I'm seriously considering it","I'm committed and looking for the right support","I'm ready to make it happen"]))}
-${appQuestion(10,'Sheridan Performance is a premium coaching experience, with an expected upfront investment required. How do you feel about investing in achieving your ambition?',appOptions('investment',['Ready to invest in the right experience',"I'd like to understand more before deciding",'Not currently in a position to invest']))}
-<div class="application-submit"><div class="application-warning"><strong>Prototype only.</strong> This form is for testing and does not send applications to Sheridan Performance. Demo answers are saved in this browser, so please don't enter real private information.</div><button type="submit" class="button">SUBMIT APPLICATION →</button></div></form></div></div></div></section>`;}
+${appQuestion(10,'Beyond The Boardroom is a premium coaching experience, with an expected upfront investment required. How do you feel about investing in achieving your ambition?',appOptions('investment',['Ready to invest in the right experience',"I'd like to understand more before deciding",'Not currently in a position to invest']))}
+</section>
+<div class="application-submit"><div class="application-actions"><button type="button" class="application-back" data-app-back hidden>← BACK</button><button type="button" class="button application-next" data-app-next>NEXT: YOUR STARTING POINT →</button><button type="submit" class="button application-submit-button" data-app-submit hidden>SUBMIT APPLICATION →</button></div><div class="application-warning"><strong>Prototype only.</strong> This form is for testing and does not send applications to Sheridan Performance. Demo answers are saved in this browser, so please don't enter real private information.</div></div></form></div></div></div></section>`;}
+const applicationStages=[
+ {name:'YOUR AMBITION',next:'NEXT: YOUR STARTING POINT →',count:'3 QUESTIONS'},
+ {name:'YOUR STARTING POINT',next:'NEXT: YOUR COMMITMENT →',count:'3 QUESTIONS'},
+ {name:'YOUR COMMITMENT',next:'',count:'4 QUESTIONS'}
+];
+function setApplicationStep(i,scroll=true){
+ const form=document.getElementById('application');if(!form)return;
+ applicationStep=Math.max(0,Math.min(2,i));
+ form.querySelectorAll('[data-application-step]').forEach((el,n)=>{el.hidden=n!==applicationStep;});
+ document.getElementById('application-step-count').textContent=`STEP ${applicationStep+1} OF 3`;
+ document.getElementById('application-step-title').textContent=applicationStages[applicationStep].name;
+ document.getElementById('application-question-count').textContent=applicationStages[applicationStep].count;
+ document.getElementById('application-progress-value').textContent=`${applicationStep+1} / 3`;
+ const progress=document.querySelector('.application-progress');progress.setAttribute('aria-valuenow',String(applicationStep+1));
+ form.closest('.application-card').querySelector('.application-progress-fill').style.width=`${(applicationStep+1)*100/3}%`;
+ form.querySelector('[data-app-back]').hidden=applicationStep===0;
+ form.querySelector('[data-app-next]').hidden=applicationStep===2;
+ form.querySelector('[data-app-next]').textContent=applicationStages[applicationStep].next;
+ form.querySelector('[data-app-submit]').hidden=applicationStep!==2;
+ if(scroll){const card=form.closest('.application-card');card.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}
+}
+function validateApplicationStep(index){
+ const form=document.getElementById('application');
+ const panel=form?.querySelector(`[data-application-step="${index}"]`);if(!panel)return false;
+ for(const field of panel.querySelectorAll('input, textarea, select')){
+  if(field.disabled)continue;
+  if(!field.checkValidity()){
+   if(applicationStep!==index)setApplicationStep(index,false);
+   field.reportValidity();
+   return false;
+  }
+ }
+ return true;
+}
 function applicationSubmitted(){return `<section class="application-page"><div class="container"><div class="application-success" role="status"><div class="eyebrow">APPLICATION SUBMITTED</div><h1>YOUR NEXT CHAPTER STARTS HERE.</h1><div class="application-warning"><strong>Demo confirmation — not sent.</strong> This is a website prototype. Your responses are only stored locally in this browser; the Sheridan team has not received an application.</div><h2>Thank you for applying.</h2><p>We'll review your application and, if there's a potential fit, be in touch to arrange a conversation.</p><p>We'll explore your ambition, understand what's possible and show you how we could engineer the journey around your career, family and life.</p><p class="application-closing">The event is the vehicle. The person you become is the win.</p>${btn('home','Return to Home →','button')}</div></div></section>`;}
 function adm(){const tab=adminTab;return `<div class="admin-shell"><div class="admin-head"><div class="container"><div class="eyebrow">PROTOTYPE CMS</div><h1 style="font:800 37px Manrope,sans-serif;letter-spacing:-.05em;margin:8px 0">CONTENT & BUSINESS STUDIO</h1><p class="fine">Editable mock backend. Changes persist in this browser only. Not authenticated or connected to a database.</p></div></div><div class="container admin-grid"><div class="admin-menu">${[['content','Website content'],['packages','Packages'],['videos','Video slots'],['leads','Enquiries & reporting']].map(([x,y])=>`<button data-tab="${x}" class="${x===tab?'active':''}">${y}</button>`).join('')}<button data-reset="1">Reset demo content ↺</button></div><div class="admin-panel">${tab==='content'?`<h2>Site content</h2><p class="smallnote">Edit the homepage messaging, service descriptions and hero image.</p><form id="admin-content"><label>Hero headline<input name="heroTitle" value="${esc(content.heroTitle)}"></label><label>Highlighted words<input name="heroAccent" value="${esc(content.heroAccent)}"></label><label>Hero description<textarea name="heroSubtitle">${esc(content.heroSubtitle)}</textarea></label><label>Hero image URL<input name="heroImage" value="${esc(content.heroImage)}"></label><div class="eyebrow" style="margin:27px 0 13px">THE THREE OFFERS · HOMEPAGE</div><label>Section heading (use a new line to highlight the second line)<textarea name="offersHeading">${esc(content.offersHeading||defaults.offersHeading)}</textarea></label><label>Supporting question<input name="offersQuestion" value="${esc(content.offersQuestion||defaults.offersQuestion)}"></label><div class="admin-row"><label>Offer 01 title<input name="oneTitle" value="${esc(content.oneTitle)}"></label><label>Offer 02 title<input name="docTitle" value="${esc(content.docTitle)}"></label></div><label>Offer 01 description<textarea name="oneDesc">${esc(content.oneDesc)}</textarea></label><label>Offer 01 best for<textarea name="oneBest">${esc(content.oneBest||defaults.oneBest)}</textarea></label><label>Offer 02 description<textarea name="docDesc">${esc(content.docDesc)}</textarea></label><label>Offer 02 best for<textarea name="docBest">${esc(content.docBest||defaults.docBest)}</textarea></label><label>Offer 03 title<input name="corpTitle" value="${esc(content.corpTitle)}"></label><label>Offer 03 description<textarea name="corpDesc">${esc(content.corpDesc)}</textarea></label><label>Offer 03 best for<textarea name="corpBest">${esc(content.corpBest||defaults.corpBest)}</textarea></label><div class="eyebrow" style="margin:27px 0 13px">CAROUSEL IMAGERY</div><label>Offer 01 image URL<input name="oneImage" value="${esc(content.oneImage||defaults.oneImage)}"></label><label>Offer 03 image URL<input name="corpImage" value="${esc(content.corpImage||defaults.corpImage)}"></label><label>Offer 02 image URL<input name="docImage" value="${esc(content.docImage||defaults.docImage)}"></label><button type="submit" class="button">Save changes →</button></form>`:
  tab==='packages'?`<h2>Three product cards</h2><p class="smallnote">Edit the descriptions shown at the bottom of Coaching, First IRONMAN and For Teams. Each button opens its corresponding product page; the separate discovery call links to Apply. Prices and terms are drafts.</p><form id="admin-packages">${content.plans.map((p,i)=>`<div style="border-bottom:1px solid var(--border);margin-bottom:22px"><div class="eyebrow">PRODUCT 0${i+1}</div><div class="admin-row"><label>Product title<input name="name${i}" value="${esc(p.name)}"></label><label>Commercial label<input name="price${i}" value="${esc(p.price)}"></label></div><label>Description<textarea name="description${i}">${esc(p.description)}</textarea></label></div>`).join('')}<button class="button">Save product cards →</button></form>`:
@@ -626,6 +700,12 @@ if(modal.type==='checkout'){const p=content.plans[modal.index]||content.plans[0]
 if(modal.type==='success'){inside=`<div class="eyebrow">DEMONSTRATION COMPLETE</div><h2>CHECKOUT FLOW VERIFIED.</h2><p>The sample buyer experience has completed. No payment was made. Next step: connect the Stripe test account and real product/price IDs.</p><button class="button" data-close>Return to website →</button>`}
 if(modal.type==='enquiry'){inside=`<div class="eyebrow">FORM PREVIEW</div><h2>ENQUIRY SAVED.</h2><p>Your demo enquiry was saved locally. View it in Editor demo → Enquiries & reporting. It was not sent to the Sheridan team.</p><button class="button" data-go="admin" data-close>View demo editor →</button>`}
 m.innerHTML=`<div class="overlay" data-dismiss><div class="modal" role="dialog" aria-modal="true" aria-label="Preview dialog"><button class="x" data-close aria-label="Close">×</button>${inside}</div></div>`}
+document.addEventListener('click',e=>{
+ const next=e.target.closest('[data-app-next]');
+ if(next){if(validateApplicationStep(applicationStep))setApplicationStep(applicationStep+1);return;}
+ const back=e.target.closest('[data-app-back]');
+ if(back){setApplicationStep(applicationStep-1);return;}
+});
 document.addEventListener('click',e=>{const t=e.target.closest('[data-go],[data-menu],[data-close],[data-dismiss],[data-video],[data-checkout],[data-mockbuy],[data-tab],[data-reset],[data-offer-slide],[data-offer-step]');if(!t)return;if(t.hasAttribute('data-dismiss')&&e.target!==t)return;if(t.hasAttribute('data-go')){e.preventDefault();go(t.dataset.go);return}if(t.hasAttribute('data-menu')){menu=!menu;renderNav();return}if(t.hasAttribute('data-offer-slide')){selectOffer(Number(t.dataset.offerSlide));return}if(t.hasAttribute('data-offer-step')){selectOffer(offerSlide+Number(t.dataset.offerStep));return}if(t.hasAttribute('data-close')||t.hasAttribute('data-dismiss')){modal=null;renderModal();return}if(t.hasAttribute('data-video')){modal={type:'video',key:t.dataset.video==='intro'?'introVideo':'storyVideo'};renderModal();return}if(t.hasAttribute('data-checkout')){modal={type:'checkout',index:Number(t.dataset.checkout)};renderModal();return}if(t.hasAttribute('data-mockbuy')){if(!ENABLE_STRIPE_TEST_CHECKOUT){modal={type:'success'};renderModal();return}const plan=content.plans[Number(t.dataset.mockbuy)];t.disabled=true;t.textContent='Opening Stripe…';fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({package:plan.stripeKey})}).then(r=>r.json().then(data=>({ok:r.ok,data}))).then(({ok,data})=>{if(!ok||!data.url)throw new Error(data.error||'Stripe unavailable');location.assign(data.url)}).catch(err=>{alert(err.message);t.disabled=false;t.textContent='Try test checkout →'});return}if(t.hasAttribute('data-tab')){adminTab=t.dataset.tab;render();return}if(t.hasAttribute('data-reset')){if(confirm('Reset prototype copy and packages? Existing demo leads will stay.')){content=structuredClone(defaults);save();render()}return}});
 document.addEventListener('change',e=>{if(!e.target.matches('#application input[type=radio]'))return;
  const field=e.target.name, group=document.querySelector('[data-other-field="'+field+'"]');if(!group)return;
@@ -633,6 +713,7 @@ document.addEventListener('change',e=>{if(!e.target.matches('#application input[
  group.hidden=!other;input.disabled=!other;input.required=other;if(!other)input.value='';
 });
 document.addEventListener('submit',e=>{const f=e.target;if(!f.id)return;e.preventDefault();const d=Object.fromEntries(new FormData(f).entries());if(f.id==='application'){
+  for(let i=0;i<3;i++){if(!validateApplicationStep(i))return;}
   for(const field of ['challenge','obstacle'])if(d[field]==='Something else')d[field]=String(d[field+'Other']||'').trim();
   d.type='application';d.interest=d.challenge;d.goal=d.why;d.date=new Date().toISOString();
   leads.unshift(d);save();go('submitted');return;
